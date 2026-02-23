@@ -6,6 +6,7 @@ export interface Allocation {
   id: string;
   projectId: string;
   projectName: string;
+  client?: string;
   startDate: Date;
   endDate: Date;
   hoursPerDay: number;
@@ -17,6 +18,7 @@ export interface TeamMember {
   id: string;
   name: string;
   role: string;
+  grade?: string;
   avatar?: string;
   projectCount: number;
   allocations: Allocation[];

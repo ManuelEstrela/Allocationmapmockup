@@ -41,7 +41,6 @@ export function TeamMemberRow({
         h.getFullYear() === date.getFullYear()
     );
 
-  /** Returns all allocations active on a given period date */
   const getAllocationsForPeriod = (date: Date): Allocation[] => {
     return member.allocations.filter((a) => {
       if (viewMode === 'monthly') {
@@ -67,10 +66,6 @@ export function TeamMemberRow({
     });
   };
 
-  /**
-   * For the summary row: sum hoursPerDay across all active allocations,
-   * then determine the aggregate status.
-   */
   const getSummaryForPeriod = (date: Date) => {
     const active = getAllocationsForPeriod(date);
     if (active.length === 0) return { totalPercentage: 0, status: 'empty' as const, allocations: [] };
@@ -116,7 +111,7 @@ export function TeamMemberRow({
   return (
     <>
       {/* Main Summary Row */}
-      <div className="flex border-b border-gray-200 bg-white hover:bg-gray-50 transition-colors" style={{ minHeight: '48px' }}>
+      <div className="flex border-b border-gray-200 bg-white hover:bg-gray-50 transition-colors" style={{ minHeight: '52px' }}>
         <div className="w-56 flex-shrink-0 px-4 border-r border-gray-200 flex items-center gap-2.5">
           <button onClick={onToggle} className="flex-shrink-0 hover:bg-gray-100 rounded p-0.5">
             {isExpanded ? (
@@ -136,11 +131,13 @@ export function TeamMemberRow({
               {member.hasWarning && <AlertCircle className="w-3.5 h-3.5 text-[#ff534c] flex-shrink-0" />}
               {member.isIdle && <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
             </div>
-            <p className="text-[11px] text-gray-500">{member.role}</p>
+            <p className="text-[11px] text-gray-500 truncate">
+              {member.role}{member.grade ? ` - ${member.grade}` : ''}
+            </p>
           </div>
         </div>
 
-        {/* Summary cells — sum of all projects per day */}
+        {/* Summary cells */}
         <div className="flex flex-1 items-stretch">
           {periods.map((period, index) => {
             const isWknd = period.isWeekend || false;
@@ -212,15 +209,12 @@ export function TeamMemberRow({
       {/* Expanded Project Rows */}
       {isExpanded &&
         Object.entries(projectGroups).map(([projectName, allocations], idx) => (
-          <div key={idx} className="flex border-b border-gray-100 bg-gray-50" style={{ minHeight: '40px' }}>
+          <div key={idx} className="flex border-b border-gray-100 bg-gray-50" style={{ minHeight: '44px' }}>
             <div className="w-56 flex-shrink-0 px-4 border-r border-gray-200 flex items-center pl-12">
               <div>
                 <p className="text-xs text-gray-700 font-medium truncate">{projectName}</p>
-                <p className="text-[11px] text-gray-500">
-                  A-TO-BE •{' '}
-                  {allocations[0].hoursPerDay > 0
-                    ? (allocations[0].hoursPerDay / 8 * 100).toFixed(0)
-                    : 0}%
+                <p className="text-[11px] text-gray-500 truncate">
+                  {allocations[0].client || 'A-TO-BE'}
                 </p>
               </div>
             </div>

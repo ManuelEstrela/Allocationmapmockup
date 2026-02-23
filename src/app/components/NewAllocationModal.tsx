@@ -20,41 +20,29 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-auto">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between sticky top-0 bg-white">
-          <h2 className="text-lg font-semibold text-gray-900">New Allocation</h2>
+        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+          <h2 className="text-xl font-semibold text-gray-900">New Allocation</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="px-6 py-6">
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="role">Role</Label>
-                <Select>
-                  <SelectTrigger id="role">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="frontend">Frontend</SelectItem>
-                    <SelectItem value="backend">Backend</SelectItem>
-                    <SelectItem value="designer">Designer</SelectItem>
-                    <SelectItem value="engineering">Engineering</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Scrollable content */}
+        <div className="px-8 py-6 overflow-y-auto flex-1">
+          <div className="space-y-6">
 
-              <div>
-                <Label htmlFor="name">Name</Label>
+            {/* Row 1: Name + Role */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Name</Label>
                 <Select>
-                  <SelectTrigger id="name">
+                  <SelectTrigger className="h-10">
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
                   <SelectContent>
@@ -65,27 +53,29 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
                   </SelectContent>
                 </Select>
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="customer">Customer</Label>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Role</Label>
                 <Select>
-                  <SelectTrigger id="customer">
-                    <SelectValue placeholder="Select customer" />
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="acme">Acme Corp</SelectItem>
-                    <SelectItem value="techstart">TechStart</SelectItem>
-                    <SelectItem value="global">GlobalTech</SelectItem>
+                    <SelectItem value="frontend">Frontend</SelectItem>
+                    <SelectItem value="backend">Backend</SelectItem>
+                    <SelectItem value="designer">Designer</SelectItem>
+                    <SelectItem value="engineering">Engineering</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div>
-                <Label htmlFor="project">Project</Label>
+            {/* Row 2: Project + Customer */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Project</Label>
                 <Select>
-                  <SelectTrigger id="project">
+                  <SelectTrigger className="h-10">
                     <SelectValue placeholder="Select project" />
                   </SelectTrigger>
                   <SelectContent>
@@ -95,12 +85,27 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Customer</Label>
+                <Select>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select customer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="acme">Acme Corp</SelectItem>
+                    <SelectItem value="techstart">TechStart</SelectItem>
+                    <SelectItem value="global">GlobalTech</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="retailco">RetailCo</Label>
+            {/* RetailCo (full width) */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">RetailCo</Label>
               <Select>
-                <SelectTrigger id="retailco">
+                <SelectTrigger className="h-10">
                   <SelectValue placeholder="Select option" />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,77 +116,77 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="startDate">Start Date</Label>
-                <Input id="startDate" type="date" defaultValue="2024-10-01" />
+            {/* Start Date + End Date */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Start Date</Label>
+                <Input type="date" defaultValue="2024-10-01" className="h-10" />
               </div>
-
-              <div>
-                <Label htmlFor="endDate">End Date</Label>
-                <Input id="endDate" type="date" defaultValue="2024-11-02" />
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="initiationWeeks">Number of days to allocate</Label>
-              <Input id="initiationWeeks" type="number" defaultValue="18" />
-            </div>
-
-            <div>
-              <Label htmlFor="sprints">Number of sprints</Label>
-              <Input id="sprints" type="number" defaultValue="5" />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="sprint1">Sprint 1 (number days)</Label>
-                <Input id="sprint1" type="number" defaultValue="5" />
-              </div>
-
-              <div>
-                <Label htmlFor="sprint2">Sprint 2 (number days)</Label>
-                <Input id="sprint2" type="number" defaultValue="5" />
-              </div>
-
-              <div>
-                <Label htmlFor="sprint3">Sprint 3 (number days)</Label>
-                <Input id="sprint3" type="number" />
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">End Date</Label>
+                <Input type="date" defaultValue="2024-11-02" className="h-10" />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="sprint4">Sprint 4 (number days)</Label>
-                <Input id="sprint4" type="number" />
-              </div>
+            {/* Number of days to allocate */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Number of days to allocate</Label>
+              <Input type="number" defaultValue="18" className="h-10" />
+            </div>
 
-              <div>
-                <Label htmlFor="sprint5">Sprint 5 (number days)</Label>
-                <Input id="sprint5" type="number" defaultValue="2" />
+            {/* Number of sprints */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Number of sprints</Label>
+              <Input type="number" defaultValue="5" className="h-10" />
+            </div>
+
+            {/* Sprint 1, 2, 3 */}
+            <div className="grid grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Sprint 1 (number days)</Label>
+                <Input type="number" defaultValue="5" className="h-10" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Sprint 2 (number days)</Label>
+                <Input type="number" defaultValue="5" className="h-10" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Sprint 3 (number days)</Label>
+                <Input type="number" className="h-10" />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="uat">UAT (number days)</Label>
-              <Input id="uat" type="number" defaultValue="2" />
+            {/* Sprint 4, 5 */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Sprint 4 (number days)</Label>
+                <Input type="number" className="h-10" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Sprint 5 (number days)</Label>
+                <Input type="number" defaultValue="2" className="h-10" />
+              </div>
             </div>
 
-            <p className="text-xs text-gray-500 bg-gray-50 p-3 rounded border border-gray-200">
-              AI will analyze the team availability and suggest best fit resources based on the skills you've indicated.
-            </p>
+            {/* UAT */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">UAT (number days)</Label>
+              <Input type="number" defaultValue="2" className="h-10" />
+            </div>
+
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 sticky bottom-0 bg-white">
-          <Button variant="outline" onClick={onClose}>
+        <div className="px-8 py-5 border-t border-gray-100 flex justify-end gap-3 flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="px-6 h-10">
             Cancel
           </Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button className="bg-[#ff534c] hover:bg-[#e64840] text-white px-6 h-10">
             Save
           </Button>
         </div>
+
       </div>
     </div>
   );
