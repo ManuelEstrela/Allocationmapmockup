@@ -1,19 +1,20 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { TopNavigation } from './TopNavigation';
 import { Header } from './Header';
-import { FiltersPopover } from './FiltersPopover';
 import { TimelineGrid } from './TimelineGrid';
 import { AIAssistantPanel } from './AIAssistantPanel';
 import { NewAllocationModal } from './NewAllocationModal';
+import { FiltersPanel } from './FiltersPanel';
 import { ViewMode, FilterOptions } from '../types/allocation';
 import { mockTeamMembers } from '../data/mockData';
 import { format, addMonths, subMonths, addQuarters, subQuarters, addYears, subYears, getQuarter } from 'date-fns';
 
 export function Dashboard() {
   const [viewMode, setViewMode] = useState<ViewMode>('monthly');
-  const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1)); // Feb 2024
+  const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1));
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isNewAllocationOpen, setIsNewAllocationOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({
     job: 'all',
@@ -58,7 +59,6 @@ export function Dashboard() {
     setSearchValue('');
   };
 
-  // Get current period label
   const currentPeriod = useMemo(() => {
     if (viewMode === 'monthly') {
       return format(currentDate, 'MMM yyyy');
@@ -71,12 +71,8 @@ export function Dashboard() {
     }
   }, [viewMode, currentDate]);
 
-  // Get current quarter for quarterly view
-  const currentQuarter = useMemo(() => {
-    return getQuarter(currentDate);
-  }, [currentDate]);
+  const currentQuarter = useMemo(() => getQuarter(currentDate), [currentDate]);
 
-  // Filter team members based on search
   const filteredTeamMembers = mockTeamMembers.filter(member => {
     if (searchValue) {
       const searchLower = searchValue.toLowerCase();
@@ -89,9 +85,9 @@ export function Dashboard() {
   });
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       <TopNavigation />
-      
+
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -100,15 +96,21 @@ export function Dashboard() {
         onNewAllocation={() => setIsNewAllocationOpen(true)}
         onAIAssistant={() => setIsAIPanelOpen(true)}
         currentPeriod={currentPeriod}
+        onFiltersClick={() => setFiltersOpen((v) => !v)}
+        filtersOpen={filtersOpen}
       />
 
-      <FiltersPopover
-        filters={filters}
-        onFilterChange={setFilters}
-        onReset={handleResetFilters}
-        searchValue={searchValue}
-        onSearchChange={setSearchValue}
-      />
+      {/* Filters dropdown panel */}
+      {filtersOpen && (
+        <FiltersPanel
+          filters={filters}
+          onFilterChange={setFilters}
+          onReset={handleResetFilters}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          onClose={() => setFiltersOpen(false)}
+        />
+      )}
 
       <TimelineGrid
         teamMembers={filteredTeamMembers}
@@ -128,12 +130,11 @@ export function Dashboard() {
         onClose={() => setIsNewAllocationOpen(false)}
       />
 
-      {/* Overlay when AI panel is open */}
       {isAIPanelOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-40"
           onClick={() => setIsAIPanelOpen(false)}
-        ></div>
+        />
       )}
     </div>
   );

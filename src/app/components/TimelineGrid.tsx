@@ -2,7 +2,19 @@ import { useState } from 'react';
 import { TeamMember, ViewMode, Allocation } from '../types/allocation';
 import { TeamMemberRow } from './TeamMemberRow';
 import { AllocationDetailModal } from './AllocationDetailModal';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isWeekend, startOfQuarter, endOfQuarter, eachWeekOfInterval, startOfYear, endOfYear, eachMonthOfInterval } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isWeekend,
+  startOfQuarter,
+  endOfQuarter,
+  eachWeekOfInterval,
+  startOfYear,
+  endOfYear,
+  eachMonthOfInterval,
+} from 'date-fns';
 import { holidays } from '../data/mockData';
 
 interface TimelineGridProps {
@@ -13,7 +25,13 @@ interface TimelineGridProps {
   currentYear?: number;
 }
 
-export function TimelineGrid({ teamMembers, viewMode, currentDate, currentQuarter, currentYear }: TimelineGridProps) {
+export function TimelineGrid({
+  teamMembers,
+  viewMode,
+  currentDate,
+  currentQuarter,
+  currentYear,
+}: TimelineGridProps) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedAllocation, setSelectedAllocation] = useState<{
     allocation: Allocation;
@@ -24,39 +42,39 @@ export function TimelineGrid({ teamMembers, viewMode, currentDate, currentQuarte
   const toggleRow = (id: string) => {
     setExpandedRows((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
   const isHoliday = (date: Date) => {
     return holidays.some(
-      (holiday) =>
-        holiday.getDate() === date.getDate() &&
-        holiday.getMonth() === date.getMonth() &&
-        holiday.getFullYear() === date.getFullYear()
+      (h) =>
+        h.getDate() === date.getDate() &&
+        h.getMonth() === date.getMonth() &&
+        h.getFullYear() === date.getFullYear()
     );
   };
 
   const handleAllocationClick = (allocation: Allocation, member: TeamMember, day: Date) => {
-    if (viewMode === 'monthly') {
-      setSelectedAllocation({ allocation, member, day });
-    }
+    if (viewMode === 'monthly') setSelectedAllocation({ allocation, member, day });
   };
 
   // Generate periods based on view mode
-  let periods: Array<{ label: string; subLabel?: string; date: Date; isWeekend?: boolean; isHoliday?: boolean }> = [];
+  let periods: Array<{
+    label: string;
+    subLabel?: string;
+    date: Date;
+    isWeekend?: boolean;
+    isHoliday?: boolean;
+  }> = [];
 
   if (viewMode === 'monthly') {
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
     const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
-    
-    periods = days.map(day => ({
+    periods = days.map((day) => ({
       label: format(day, 'd'),
       subLabel: format(day, 'EEE'),
       date: day,
@@ -64,55 +82,60 @@ export function TimelineGrid({ teamMembers, viewMode, currentDate, currentQuarte
       isHoliday: isHoliday(day),
     }));
   } else if (viewMode === 'quarterly') {
-    // Generate weeks for the quarter
     const quarterStart = startOfQuarter(currentDate);
     const quarterEnd = endOfQuarter(currentDate);
     const weeks = eachWeekOfInterval({ start: quarterStart, end: quarterEnd }, { weekStartsOn: 0 });
-    
     const weekOffset = currentQuarter ? (currentQuarter - 1) * 13 : 0;
-    
     periods = weeks.slice(0, 13).map((week, index) => ({
       label: `W${weekOffset + index + 1}`,
       date: week,
     }));
-  } else if (viewMode === 'annual') {
-    // Generate months for the year
+  } else {
     const yearStart = startOfYear(currentDate);
     const yearEnd = endOfYear(currentDate);
     const months = eachMonthOfInterval({ start: yearStart, end: yearEnd });
-    
-    periods = months.map(month => ({
+    periods = months.map((month) => ({
       label: format(month, 'MMM'),
       date: month,
     }));
   }
 
+  // Column width classes — all views stretch to fill screen width
+  const colClass =
+    viewMode === 'monthly'
+      ? 'flex-1 min-w-[28px]'       // stretch to fill, min keeps days readable
+      : viewMode === 'quarterly'
+      ? 'flex-1 min-w-[60px]'       // stretch to fill
+      : 'flex-1 min-w-[80px]';      // stretch to fill for 12 months
+
   return (
     <>
       <div className="flex-1 overflow-auto bg-gray-50">
-        <div className="min-w-max">
+        <div className="w-full">
           {/* Calendar Header */}
           <div className="sticky top-0 z-10 bg-white border-b border-gray-200">
             <div className="flex">
-              <div className="w-64 px-6 py-3 border-r border-gray-200">
-                <span className="text-xs font-medium text-gray-500 uppercase">Team Member</span>
+              <div className="w-56 flex-shrink-0 px-4 py-2 border-r border-gray-200">
+                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  Team Member
+                </span>
               </div>
-              <div className="flex-1 flex">
+              <div className="flex flex-1">
                 {periods.map((period, index) => (
                   <div
                     key={index}
-                    className={`flex-shrink-0 ${viewMode === 'monthly' ? 'w-12' : viewMode === 'quarterly' ? 'w-16' : 'w-20'} px-2 py-3 border-r border-gray-200 text-center ${
+                    className={`flex-shrink-0 ${colClass} px-1 py-2 border-r border-gray-200 text-center ${
                       period.isWeekend || period.isHoliday ? 'bg-gray-100' : ''
                     }`}
                   >
                     {period.subLabel && (
-                      <div className="text-xs text-gray-500">{period.subLabel}</div>
+                      <div className="text-[10px] text-gray-400 leading-tight">{period.subLabel}</div>
                     )}
                     <div
-                      className={`text-sm font-medium ${
-                        period.subLabel ? 'mt-1' : ''
+                      className={`text-xs font-medium leading-tight ${
+                        period.subLabel ? 'mt-0.5' : 'mt-1'
                       } ${
-                        period.isWeekend || period.isHoliday ? 'text-gray-400' : 'text-gray-900'
+                        period.isWeekend || period.isHoliday ? 'text-gray-400' : 'text-gray-800'
                       }`}
                     >
                       {period.label}
@@ -123,7 +146,7 @@ export function TimelineGrid({ teamMembers, viewMode, currentDate, currentQuarte
             </div>
           </div>
 
-          {/* Team Members */}
+          {/* Team Member Rows */}
           <div>
             {teamMembers.map((member) => (
               <TeamMemberRow
@@ -134,38 +157,28 @@ export function TimelineGrid({ teamMembers, viewMode, currentDate, currentQuarte
                 onToggle={() => toggleRow(member.id)}
                 viewMode={viewMode}
                 onAllocationClick={handleAllocationClick}
+                colClass={colClass}
               />
             ))}
           </div>
 
           {/* Legend */}
-          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-3">
-            <div className="flex items-center gap-6 text-xs">
+          <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-2.5">
+            <div className="flex items-center gap-5 text-xs flex-wrap">
               <span className="font-medium text-gray-700">Calendar Legend</span>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#c8efe8] rounded"></div>
-                <span className="text-gray-600">Full 100%</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#fcc29c] rounded"></div>
-                <span className="text-gray-600">Partial</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#ff534c] rounded"></div>
-                <span className="text-gray-600">Overload</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#a3c9ea] rounded"></div>
-                <span className="text-gray-600">Reserved for a project</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-[#ffe1e6] rounded"></div>
-                <span className="text-gray-600">Vacation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-200 rounded"></div>
-                <span className="text-gray-600">Weekend or Holiday</span>
-              </div>
+              {[
+                { color: 'bg-[#c8efe8]', label: 'Full 100%' },
+                { color: 'bg-[#fcc29c]', label: 'Partial' },
+                { color: 'bg-[#ff534c]', label: 'Overload' },
+                { color: 'bg-[#a3c9ea]', label: 'Reserved for a project' },
+                { color: 'bg-[#ffe1e6]', label: 'Vacation' },
+                { color: 'bg-gray-200', label: 'Weekend or Holiday' },
+              ].map(({ color, label }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <div className={`w-3.5 h-3.5 ${color} rounded`} />
+                  <span className="text-gray-600">{label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
