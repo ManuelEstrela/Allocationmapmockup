@@ -1,7 +1,13 @@
-import { Bell } from 'lucide-react';
+import { Bell, Filter } from 'lucide-react';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { Button } from './ui/button';
 
-export function TopNavigation() {
+interface TopNavigationProps {
+  onFiltersClick: () => void;
+  filtersOpen: boolean;
+}
+
+export function TopNavigation({ onFiltersClick, filtersOpen }: TopNavigationProps) {
   return (
     <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-8">
@@ -19,7 +25,17 @@ export function TopNavigation() {
         </nav>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onFiltersClick}
+          className={`border-[#ff534c] text-[#ff534c] hover:bg-orange-50 h-8 ${filtersOpen ? 'bg-orange-50' : ''}`}
+        >
+          <Filter className="w-4 h-4 mr-1.5" />
+          Filters
+        </Button>
+
         <button className="relative p-2 hover:bg-gray-100 rounded-full">
           <Bell className="w-5 h-5 text-gray-600" />
           <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full"></span>

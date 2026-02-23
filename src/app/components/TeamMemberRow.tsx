@@ -4,6 +4,12 @@ import { Avatar, AvatarFallback } from './ui/avatar';
 import { AllocationCell } from './AllocationCell';
 import { isWithinInterval, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { holidays } from '../data/mockData';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 interface TeamMemberRowProps {
   member: TeamMember;
@@ -27,7 +33,7 @@ export function TeamMemberRow({
   const getInitials = (name: string) =>
     name.split(' ').map((n) => n[0]).join('').toUpperCase();
 
-  const isHoliday = (date: Date) =>
+  const isHolidayDate = (date: Date) =>
     holidays.some(
       (h) =>
         h.getDate() === date.getDate() &&
@@ -35,35 +41,70 @@ export function TeamMemberRow({
         h.getFullYear() === date.getFullYear()
     );
 
-  const getAllocationForPeriod = (period: Date) => {
-    if (viewMode === 'monthly') {
-      return member.allocations.find((a) => {
-        const t = period.getTime();
+  /** Returns all allocations active on a given period date */
+  const getAllocationsForPeriod = (date: Date): Allocation[] => {
+    return member.allocations.filter((a) => {
+      if (viewMode === 'monthly') {
+        const t = date.getTime();
         return t >= a.startDate.getTime() && t <= a.endDate.getTime();
-      });
-    } else if (viewMode === 'quarterly') {
-      const weekStart = startOfWeek(period, { weekStartsOn: 0 });
-      const weekEnd = endOfWeek(period, { weekStartsOn: 0 });
-      return member.allocations.find(
-        (a) =>
+      } else if (viewMode === 'quarterly') {
+        const weekStart = startOfWeek(date, { weekStartsOn: 0 });
+        const weekEnd = endOfWeek(date, { weekStartsOn: 0 });
+        return (
           isWithinInterval(a.startDate, { start: weekStart, end: weekEnd }) ||
           isWithinInterval(a.endDate, { start: weekStart, end: weekEnd }) ||
           (a.startDate <= weekStart && a.endDate >= weekEnd)
-      );
-    } else {
-      const monthStart = startOfMonth(period);
-      const monthEnd = endOfMonth(period);
-      return member.allocations.find(
-        (a) =>
+        );
+      } else {
+        const monthStart = startOfMonth(date);
+        const monthEnd = endOfMonth(date);
+        return (
           isWithinInterval(a.startDate, { start: monthStart, end: monthEnd }) ||
           isWithinInterval(a.endDate, { start: monthStart, end: monthEnd }) ||
           (a.startDate <= monthStart && a.endDate >= monthEnd)
-      );
+        );
+      }
+    });
+  };
+
+  /**
+   * For the summary row: sum hoursPerDay across all active allocations,
+   * then determine the aggregate status.
+   */
+  const getSummaryForPeriod = (date: Date) => {
+    const active = getAllocationsForPeriod(date);
+    if (active.length === 0) return { totalPercentage: 0, status: 'empty' as const, allocations: [] };
+
+    const totalHours = active.reduce((sum, a) => sum + a.hoursPerDay, 0);
+    const totalPct = totalHours / 8;
+
+    let status: 'overload' | 'full' | 'partial' | 'vacation' | 'empty';
+    if (totalHours === 0) {
+      status = 'vacation';
+    } else if (totalPct > 1.0) {
+      status = 'overload';
+    } else if (totalPct >= 1.0) {
+      status = 'full';
+    } else {
+      status = 'partial';
+    }
+
+    return { totalPercentage: totalPct, status, allocations: active };
+  };
+
+  const getSummaryColor = (status: string) => {
+    switch (status) {
+      case 'overload': return 'bg-[#ff534c] hover:bg-[#e64840]';
+      case 'full':     return 'bg-[#c8efe8] hover:bg-[#b0e5dc]';
+      case 'partial':  return 'bg-[#fcc29c] hover:bg-[#fbb481]';
+      case 'vacation': return 'bg-[#ffe1e6] hover:bg-[#ffd0d9]';
+      default:         return 'bg-white hover:bg-gray-50';
     }
   };
 
-  const getPercentage = (allocation: Allocation | undefined): number =>
-    allocation ? allocation.hoursPerDay / 8 : 0;
+  const getSummaryTextColor = (status: string) => {
+    return status === 'overload' ? 'text-white font-semibold' : 'text-gray-700';
+  };
 
   const projectGroups = member.allocations.reduce((acc, allocation) => {
     const key = allocation.projectName;
@@ -74,7 +115,7 @@ export function TeamMemberRow({
 
   return (
     <>
-      {/* Main Row */}
+      {/* Main Summary Row */}
       <div className="flex border-b border-gray-200 bg-white hover:bg-gray-50 transition-colors" style={{ minHeight: '48px' }}>
         <div className="w-56 flex-shrink-0 px-4 border-r border-gray-200 flex items-center gap-2.5">
           <button onClick={onToggle} className="flex-shrink-0 hover:bg-gray-100 rounded p-0.5">
@@ -99,21 +140,70 @@ export function TeamMemberRow({
           </div>
         </div>
 
+        {/* Summary cells — sum of all projects per day */}
         <div className="flex flex-1 items-stretch">
           {periods.map((period, index) => {
-            const allocation = getAllocationForPeriod(period.date);
+            const isWknd = period.isWeekend || false;
+            const isHol = period.isHoliday || false;
+
+            if (isWknd || isHol) {
+              return (
+                <div
+                  key={index}
+                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-gray-100 self-stretch`}
+                />
+              );
+            }
+
+            const { totalPercentage, status, allocations: activeAllocs } = getSummaryForPeriod(period.date);
+
+            if (status === 'empty') {
+              return (
+                <div
+                  key={index}
+                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-white self-stretch`}
+                />
+              );
+            }
+
+            const displayValue = viewMode === 'monthly'
+              ? totalPercentage.toFixed(1)
+              : `${(totalPercentage * 100).toFixed(0)}%`;
+
             return (
-              <AllocationCell
-                key={index}
-                allocation={allocation}
-                isWeekend={period.isWeekend || false}
-                isHoliday={period.isHoliday || false}
-                day={period.date}
-                viewMode={viewMode}
-                percentage={getPercentage(allocation)}
-                colClass={colClass}
-                onClick={() => allocation && onAllocationClick(allocation, member, period.date)}
-              />
+              <TooltipProvider key={index} delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      className={`flex-shrink-0 ${colClass} border-r border-gray-200 self-stretch relative cursor-pointer transition-all ${getSummaryColor(status)}`}
+                      onClick={() => activeAllocs[0] && onAllocationClick(activeAllocs[0], member, period.date)}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className={`text-[11px] ${getSummaryTextColor(status)}`}>
+                          {status === 'vacation' ? 'V' : displayValue}
+                        </span>
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-gray-900 text-white border-gray-700">
+                    <div className="text-xs">
+                      {status === 'overload' && (
+                        <p className="font-semibold text-red-400 mb-1">⚠ Overloaded ({(totalPercentage * 100).toFixed(0)}%)</p>
+                      )}
+                      {activeAllocs.map(a => (
+                        <p key={a.id} className="text-gray-200">
+                          {a.projectName}: {a.hoursPerDay > 0 ? `${(a.hoursPerDay / 8 * 100).toFixed(0)}%` : 'Vacation'}
+                        </p>
+                      ))}
+                      {activeAllocs.length > 1 && (
+                        <p className="text-gray-400 mt-1 border-t border-gray-700 pt-1">
+                          Total: {(totalPercentage * 100).toFixed(0)}%
+                        </p>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             );
           })}
         </div>
@@ -167,7 +257,7 @@ export function TeamMemberRow({
                     day={period.date}
                     isProjectRow
                     viewMode={viewMode}
-                    percentage={getPercentage(allocation)}
+                    percentage={allocation ? allocation.hoursPerDay / 8 : 0}
                     colClass={colClass}
                     onClick={() => allocation && onAllocationClick(allocation, member, period.date)}
                   />

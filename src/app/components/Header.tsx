@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Sparkles, Filter } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { ViewMode } from '../types/allocation';
 
@@ -10,8 +10,6 @@ interface HeaderProps {
   onNewAllocation: () => void;
   onAIAssistant: () => void;
   currentPeriod: string;
-  onFiltersClick: () => void;
-  filtersOpen: boolean;
 }
 
 export function Header({
@@ -22,12 +20,9 @@ export function Header({
   onNewAllocation,
   onAIAssistant,
   currentPeriod,
-  onFiltersClick,
-  filtersOpen,
 }: HeaderProps) {
   return (
     <div className="bg-white px-6 py-2.5 border-b border-gray-200 flex items-center justify-between gap-4">
-      {/* Left: View mode toggles */}
       <div className="flex items-center gap-1">
         {(['monthly', 'quarterly', 'annual'] as ViewMode[]).map((mode) => (
           <button
@@ -44,7 +39,6 @@ export function Header({
         ))}
       </div>
 
-      {/* Center: Date navigation */}
       <div className="flex items-center gap-2">
         <button
           onClick={() => onDateChange('prev')}
@@ -66,17 +60,7 @@ export function Header({
         </button>
       </div>
 
-      {/* Right: Filters + AI Assistant + New Allocation */}
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onFiltersClick}
-          className={`border-[#ff534c] text-[#ff534c] hover:bg-orange-50 h-9 ${filtersOpen ? 'bg-orange-50' : ''}`}
-        >
-          <Filter className="w-4 h-4 mr-2" />
-          Filters
-        </Button>
         <Button
           onClick={onAIAssistant}
           className="bg-[#a3c9ea] hover:bg-[#8db8df] text-gray-900 text-sm h-9"

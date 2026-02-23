@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { TopNavigation } from './TopNavigation';
 import { Header } from './Header';
 import { TimelineGrid } from './TimelineGrid';
@@ -86,21 +86,13 @@ export function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
-      <TopNavigation />
-
-      <Header
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        currentDate={currentDate}
-        onDateChange={handleDateChange}
-        onNewAllocation={() => setIsNewAllocationOpen(true)}
-        onAIAssistant={() => setIsAIPanelOpen(true)}
-        currentPeriod={currentPeriod}
+      {/* Top nav — Filters button lives here */}
+      <TopNavigation
         onFiltersClick={() => setFiltersOpen((v) => !v)}
         filtersOpen={filtersOpen}
       />
 
-      {/* Filters dropdown panel */}
+      {/* Filters panel opens between top nav and the sub-header */}
       {filtersOpen && (
         <FiltersPanel
           filters={filters}
@@ -111,6 +103,17 @@ export function Dashboard() {
           onClose={() => setFiltersOpen(false)}
         />
       )}
+
+      {/* Sub-header: view toggles, date nav, AI + New Allocation */}
+      <Header
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        currentDate={currentDate}
+        onDateChange={handleDateChange}
+        onNewAllocation={() => setIsNewAllocationOpen(true)}
+        onAIAssistant={() => setIsAIPanelOpen(true)}
+        currentPeriod={currentPeriod}
+      />
 
       <TimelineGrid
         teamMembers={filteredTeamMembers}
