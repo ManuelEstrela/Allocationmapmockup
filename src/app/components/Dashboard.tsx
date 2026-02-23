@@ -14,17 +14,17 @@ export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1));
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isNewAllocationOpen, setIsNewAllocationOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({
-    job: 'all',
-    project: 'all',
-    timezone: 'all',
-    jobGrade: 'all',
-    deliveryUnit: 'all',
-    office: 'all',
-    company: 'all',
-    talentHubs: 'all',
+    job: '',
+    project: '',
+    timezone: '',
+    jobGrade: '',
+    deliveryUnit: '',
+    office: '',
+    company: '',
+    talentHubs: '',
     dateFrom: '',
     dateTo: '',
     search: '',
@@ -44,14 +44,14 @@ export function Dashboard() {
 
   const handleResetFilters = () => {
     setFilters({
-      job: 'all',
-      project: 'all',
-      timezone: 'all',
-      jobGrade: 'all',
-      deliveryUnit: 'all',
-      office: 'all',
-      company: 'all',
-      talentHubs: 'all',
+      job: '',
+      project: '',
+      timezone: '',
+      jobGrade: '',
+      deliveryUnit: '',
+      office: '',
+      company: '',
+      talentHubs: '',
       dateFrom: '',
       dateTo: '',
       search: '',
@@ -86,13 +86,11 @@ export function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
-      {/* Top nav — Filters button lives here */}
       <TopNavigation
         onFiltersClick={() => setFiltersOpen((v) => !v)}
         filtersOpen={filtersOpen}
       />
 
-      {/* Filters panel opens between top nav and the sub-header */}
       {filtersOpen && (
         <FiltersPanel
           filters={filters}
@@ -104,7 +102,6 @@ export function Dashboard() {
         />
       )}
 
-      {/* Sub-header: view toggles, date nav, AI + New Allocation */}
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}
