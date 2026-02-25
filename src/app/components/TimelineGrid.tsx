@@ -34,7 +34,7 @@ export function TimelineGrid({
 }: TimelineGridProps) {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [selectedAllocation, setSelectedAllocation] = useState<{
-    allocation: Allocation;
+    allocation: Allocation | null;
     member: TeamMember;
     day: Date;
   } | null>(null);
@@ -57,7 +57,7 @@ export function TimelineGrid({
     );
   };
 
-  const handleAllocationClick = (allocation: Allocation, member: TeamMember, day: Date) => {
+  const handleAllocationClick = (allocation: Allocation | null, member: TeamMember, day: Date) => {
     if (viewMode === 'monthly') setSelectedAllocation({ allocation, member, day });
   };
 
@@ -100,13 +100,12 @@ export function TimelineGrid({
     }));
   }
 
-  // Column width classes — all views stretch to fill screen width
   const colClass =
     viewMode === 'monthly'
-      ? 'flex-1 min-w-[28px]'       // stretch to fill, min keeps days readable
+      ? 'flex-1 min-w-[28px]'
       : viewMode === 'quarterly'
-      ? 'flex-1 min-w-[60px]'       // stretch to fill
-      : 'flex-1 min-w-[80px]';      // stretch to fill for 12 months
+      ? 'flex-1 min-w-[60px]'
+      : 'flex-1 min-w-[80px]';
 
   return (
     <>
@@ -187,7 +186,7 @@ export function TimelineGrid({
       <AllocationDetailModal
         isOpen={selectedAllocation !== null}
         onClose={() => setSelectedAllocation(null)}
-        allocation={selectedAllocation?.allocation || null}
+        allocation={selectedAllocation?.allocation ?? null}
         memberName={selectedAllocation?.member.name || ''}
         day={selectedAllocation?.day || new Date()}
       />

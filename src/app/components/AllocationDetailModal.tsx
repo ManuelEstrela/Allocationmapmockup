@@ -17,7 +17,7 @@ export function AllocationDetailModal({
   memberName,
   day,
 }: AllocationDetailModalProps) {
-  if (!isOpen || !allocation) return null;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50" onClick={onClose}>
@@ -45,14 +45,14 @@ export function AllocationDetailModal({
         <div className="space-y-4">
           <div className="bg-gray-50 rounded-xl p-4">
             <h3 className="text-sm font-medium text-gray-700 mb-3">Existing Allocations</h3>
-            
-            <div className="space-y-3">
+
+            {allocation ? (
               <div className="bg-white rounded-lg p-3 border border-gray-200">
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">{allocation.projectName}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      A-TO-BE • {(allocation.hoursPerDay / 8 * 100).toFixed(0)}%
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {allocation.client || 'A-TO-BE'}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">
@@ -64,7 +64,6 @@ export function AllocationDetailModal({
                     </button>
                   </div>
                 </div>
-                
                 <div className="text-xs text-gray-600 space-y-1">
                   <p>Period: {format(allocation.startDate, 'MMM d')} - {format(allocation.endDate, 'MMM d, yyyy')}</p>
                   <p>Hours per day: {allocation.hoursPerDay}h</p>
@@ -73,13 +72,17 @@ export function AllocationDetailModal({
                   )}
                 </div>
               </div>
-            </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">empty</p>
+            )}
           </div>
 
-          <button className="w-full py-3 bg-[#ff534c] hover:bg-[#e64840] text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-            <span className="text-lg">+</span>
-            New Allocation
-          </button>
+          {!allocation && (
+            <button className="w-full py-3 bg-[#ff534c] hover:bg-[#e64840] text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+              <span className="text-lg">+</span>
+              New Allocation
+            </button>
+          )}
         </div>
       </div>
     </div>
