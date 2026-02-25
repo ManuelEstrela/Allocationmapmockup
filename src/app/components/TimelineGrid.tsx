@@ -166,7 +166,7 @@ export function TimelineGrid({
             <div className="flex items-center gap-5 text-xs flex-wrap">
               <span className="font-medium text-gray-700">Calendar Legend</span>
               {[
-                { color: 'bg-[#c8efe8]', label: 'Full 100%' },
+                { color: 'bg-[#aaf7e2]', label: 'Full 100%' },
                 { color: 'bg-[#fcc29c]', label: 'Partial' },
                 { color: 'bg-[#ff534c]', label: 'Overload' },
                 { color: 'bg-[#a3c9ea]', label: 'Reserved for a project' },

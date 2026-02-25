@@ -128,6 +128,18 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
               </div>
             </div>
 
+            {/* Start Time + End Time */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Start Time</Label>
+                <Input type="time" defaultValue="09:00" className="h-10" />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">End Time</Label>
+                <Input type="time" defaultValue="18:00" className="h-10" />
+              </div>
+            </div>
+
             {/* Number of days to allocate */}
             <div className="space-y-2">
               <Label className="text-sm font-medium text-gray-700">Number of days to allocate</Label>
@@ -173,6 +185,11 @@ export function NewAllocationModal({ isOpen, onClose }: NewAllocationModalProps)
               <Label className="text-sm font-medium text-gray-700">UAT (number days)</Label>
               <Input type="number" defaultValue="2" className="h-10" />
             </div>
+
+            {/* AI note */}
+            <p className="text-sm text-gray-400 bg-gray-50 p-4 rounded-lg border border-gray-100">
+              AI will analyze the team availability and suggest best fit resources based on the skills you've indicated.
+            </p>
 
           </div>
         </div>

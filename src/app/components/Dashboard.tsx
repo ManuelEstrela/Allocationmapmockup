@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { TopNavigation } from './TopNavigation';
+import { Toolbar } from './Toolbar';
 import { Header } from './Header';
 import { TimelineGrid } from './TimelineGrid';
 import { AIAssistantPanel } from './AIAssistantPanel';
@@ -14,7 +15,7 @@ export function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date(2024, 1, 1));
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
   const [isNewAllocationOpen, setIsNewAllocationOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [filters, setFilters] = useState<FilterOptions>({
     job: '',
@@ -86,9 +87,15 @@ export function Dashboard() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
-      <TopNavigation
+      <TopNavigation />
+
+      <Toolbar
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         onFiltersClick={() => setFiltersOpen((v) => !v)}
         filtersOpen={filtersOpen}
+        onAIAssistant={() => setIsAIPanelOpen(true)}
+        onNewAllocation={() => setIsNewAllocationOpen(true)}
       />
 
       {filtersOpen && (

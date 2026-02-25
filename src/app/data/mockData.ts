@@ -32,7 +32,7 @@ export const mockTeamMembers: TeamMember[] = [
     grade: 'Intermediate',
     projectCount: 1,
     allocations: [
-      { id: 'a7', projectId: 'p3', projectName: 'Orbit Commerce', client: 'GlobalTech', startDate: new Date(2024, 1, 1), endDate: new Date(2024, 1, 2), hoursPerDay: 8, status: 'full' },
+      { id: 'a7', projectId: 'p3', projectName: 'Orbit Commerce', client: 'GlobalTech', startDate: new Date(2024, 1, 1), endDate: new Date(2024, 1, 2), hoursPerDay: 8, status: 'reserved' },
       { id: 'a8', projectId: 'p3', projectName: 'Orbit Commerce', client: 'GlobalTech', startDate: new Date(2024, 1, 5), endDate: new Date(2024, 1, 9), hoursPerDay: 8, status: 'full' },
       { id: 'a9', projectId: 'p3', projectName: 'Orbit Commerce', client: 'GlobalTech', startDate: new Date(2024, 1, 12), endDate: new Date(2024, 1, 16), hoursPerDay: 8, status: 'full' },
       { id: 'a10', projectId: 'p3', projectName: 'Orbit Commerce', client: 'GlobalTech', startDate: new Date(2024, 1, 19), endDate: new Date(2024, 1, 21), hoursPerDay: 8, status: 'full' },
@@ -63,6 +63,7 @@ export const mockTeamMembers: TeamMember[] = [
       { id: 'a17', projectId: 'p7', projectName: 'Pulse Mobile App', client: 'TechStart Inc', startDate: new Date(2024, 1, 12), endDate: new Date(2024, 1, 16), hoursPerDay: 8, status: 'full' },
       { id: 'a18', projectId: 'p8', projectName: 'Insight Dashboard', client: 'GlobalTech', startDate: new Date(2024, 1, 19), endDate: new Date(2024, 1, 23), hoursPerDay: 8, status: 'full' },
       { id: 'a19', projectId: 'p8', projectName: 'Insight Dashboard', client: 'GlobalTech', startDate: new Date(2024, 1, 26), endDate: new Date(2024, 1, 29), hoursPerDay: 4, status: 'partial' },
+      { id: 'a190', projectId: 'p7', projectName: 'Pulse Mobile App', client: 'TechStart Inc', startDate: new Date(2024, 1, 26), endDate: new Date(2024, 1, 28), hoursPerDay: 8, status: 'full' },
     ],
   },
   {

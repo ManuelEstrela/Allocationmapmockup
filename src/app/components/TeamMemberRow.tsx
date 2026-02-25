@@ -17,7 +17,7 @@ interface TeamMemberRowProps {
   isExpanded: boolean;
   onToggle: () => void;
   viewMode: ViewMode;
-  onAllocationClick: (allocation: Allocation | null, member: TeamMember, day: Date) => void;
+  onAllocationClick: (allocation: Allocation, member: TeamMember, day: Date) => void;
   colClass: string;
 }
 
@@ -73,11 +73,13 @@ export function TeamMemberRow({
     const totalHours = active.reduce((sum, a) => sum + a.hoursPerDay, 0);
     const totalPct = totalHours / 8;
 
-    let status: 'overload' | 'full' | 'partial' | 'vacation' | 'empty';
+    let status: 'overload' | 'full' | 'partial' | 'vacation' | 'reserved' | 'empty';
     if (totalHours === 0) {
       status = 'vacation';
     } else if (totalPct > 1.0) {
       status = 'overload';
+    } else if (active.every(a => a.status === 'reserved')) {
+      status = 'reserved';
     } else if (totalPct >= 1.0) {
       status = 'full';
     } else {
@@ -89,11 +91,12 @@ export function TeamMemberRow({
 
   const getSummaryColor = (status: string) => {
     switch (status) {
-      case 'overload': return 'bg-[#ff534c] hover:bg-[#e64840]';
-      case 'full':     return 'bg-[#c8efe8] hover:bg-[#b0e5dc]';
-      case 'partial':  return 'bg-[#fcc29c] hover:bg-[#fbb481]';
-      case 'vacation': return 'bg-[#ffe1e6] hover:bg-[#ffd0d9]';
-      default:         return 'bg-white hover:bg-gray-50';
+      case 'overload':  return 'bg-[#ff534c] hover:bg-[#e64840]';
+      case 'full':      return 'bg-[#aaf7e2] hover:bg-[#8ff0d5]';
+      case 'partial':   return 'bg-[#fcc29c] hover:bg-[#fbb481]';
+      case 'vacation':  return 'bg-[#ffe1e6] hover:bg-[#ffd0d9]';
+      case 'reserved':  return 'bg-[#a3c9ea] hover:bg-[#8db8df]';
+      default:          return 'bg-white hover:bg-gray-50';
     }
   };
 
@@ -158,8 +161,7 @@ export function TeamMemberRow({
               return (
                 <div
                   key={index}
-                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-white self-stretch cursor-pointer hover:bg-gray-50 transition-all`}
-                  onClick={() => onAllocationClick(null, member, period.date)}
+                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-white self-stretch`}
                 />
               );
             }

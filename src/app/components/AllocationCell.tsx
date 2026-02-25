@@ -37,7 +37,7 @@ export function AllocationCell({
     if (isWeekend || isHoliday) return 'bg-gray-100';
     if (!allocation) return 'bg-white hover:bg-gray-50';
     switch (allocation.status) {
-      case 'full': return 'bg-[#c8efe8] hover:bg-[#b0e5dc]';
+      case 'full': return 'bg-[#aaf7e2] hover:bg-[#b0e5dc]';
       case 'partial': return 'bg-[#fcc29c] hover:bg-[#fbb481]';
       case 'vacation': return 'bg-[#ffe1e6] hover:bg-[#ffd0d9]';
       case 'reserved': return 'bg-[#a3c9ea] hover:bg-[#8db8df]';
