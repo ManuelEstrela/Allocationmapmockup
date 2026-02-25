@@ -17,7 +17,7 @@ interface TeamMemberRowProps {
   isExpanded: boolean;
   onToggle: () => void;
   viewMode: ViewMode;
-  onAllocationClick: (allocation: Allocation, member: TeamMember, day: Date) => void;
+  onAllocationClick: (allocation: Allocation | null, member: TeamMember, day: Date) => void;
   colClass: string;
 }
 
@@ -161,7 +161,8 @@ export function TeamMemberRow({
               return (
                 <div
                   key={index}
-                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-white self-stretch`}
+                  className={`flex-shrink-0 ${colClass} border-r border-gray-200 bg-white self-stretch cursor-pointer hover:bg-gray-50 transition-colors`}
+                  onClick={() => onAllocationClick(null, member, period.date)}
                 />
               );
             }
