@@ -153,26 +153,26 @@ export function TeamMemberRow({
                         <Info className="w-3 h-3 text-gray-300 hover:text-[#ff534c] transition-colors" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" sideOffset={6} className="bg-white border border-orange-100 shadow-lg rounded-xl p-0 overflow-hidden w-48">
+                    <TooltipContent side="right" sideOffset={6} className="bg-white border border-[#ff534c] shadow-lg rounded-xl p-0 overflow-hidden w-48">
                       <div className="bg-orange-50 px-3 py-2 border-b border-orange-100">
-                        <p className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">Team Info</p>
+                        <p className="text-[10px] font-semibold text-[#ff534c] uppercase tracking-wide">Team Info</p>
                       </div>
                       <div className="px-3 py-2.5 space-y-1.5">
                         {member.teamInfo.em && (
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">EM</span>
+                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">EM</span>
                             <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.em}</span>
                           </div>
                         )}
                         {member.teamInfo.techLead && (
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">Tech Lead</span>
+                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">Tech Lead</span>
                             <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.techLead}</span>
                           </div>
                         )}
                         {member.teamInfo.designer && (
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">Designer</span>
+                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">Designer</span>
                             <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.designer}</span>
                           </div>
                         )}
