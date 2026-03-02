@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, AlertCircle, Clock } from 'lucide-react';
+import { ChevronDown, ChevronRight, Info, AlertTriangle } from 'lucide-react';
 import { TeamMember, ViewMode, Allocation } from '../types/allocation';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { AllocationCell } from './AllocationCell';
@@ -91,7 +91,7 @@ export function TeamMemberRow({
 
   const getSummaryColor = (status: string) => {
     switch (status) {
-      case 'overload':  return 'bg-[#ff534c] hover:bg-[#e64840]';
+      case 'overload':  return 'bg-[#aaf7e2] hover:bg-[#8ff0d5]';
       case 'full':      return 'bg-[#aaf7e2] hover:bg-[#8ff0d5]';
       case 'partial':   return 'bg-[#fcc29c] hover:bg-[#fbb481]';
       case 'vacation':  return 'bg-[#ffe1e6] hover:bg-[#ffd0d9]';
@@ -101,7 +101,7 @@ export function TeamMemberRow({
   };
 
   const getSummaryTextColor = (status: string) => {
-    return status === 'overload' ? 'text-white font-semibold' : 'text-gray-700';
+    return status === 'overload' ? 'text-[#ff534c] font-semibold' : 'text-gray-700';
   };
 
   const projectGroups = member.allocations.reduce((acc, allocation) => {
@@ -129,14 +129,59 @@ export function TeamMemberRow({
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <p className="font-medium text-gray-900 truncate text-xs">{member.name}</p>
-              {member.hasWarning && <AlertCircle className="w-3.5 h-3.5 text-[#ff534c] flex-shrink-0" />}
-              {member.isIdle && <Clock className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />}
+              {member.externalAllocations !== undefined && (
+                <span className={`text-[10px] font-semibold flex-shrink-0 ${
+                  member.allocations.length === member.externalAllocations
+                    ? 'text-gray-400'
+                    : 'text-[#ff534c]'
+                }`}>
+                  {member.allocations.length}/{member.externalAllocations}
+                </span>
+              )}
             </div>
-            <p className="text-[11px] text-gray-500 truncate">
-              {member.role}{member.grade ? ` - ${member.grade}` : ''}
-            </p>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <p className="text-[11px] text-gray-500 truncate">
+                {member.role}{member.grade ? ` - ${member.grade}` : ''}
+              </p>
+              {member.teamInfo && (
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="flex-shrink-0 p-0 leading-none">
+                        <Info className="w-3 h-3 text-gray-300 hover:text-[#ff534c] transition-colors" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={6} className="bg-white border border-orange-100 shadow-lg rounded-xl p-0 overflow-hidden w-48">
+                      <div className="bg-orange-50 px-3 py-2 border-b border-orange-100">
+                        <p className="text-[10px] font-semibold text-orange-500 uppercase tracking-wide">Team Info</p>
+                      </div>
+                      <div className="px-3 py-2.5 space-y-1.5">
+                        {member.teamInfo.em && (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">EM</span>
+                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.em}</span>
+                          </div>
+                        )}
+                        {member.teamInfo.techLead && (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">Tech Lead</span>
+                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.techLead}</span>
+                          </div>
+                        )}
+                        {member.teamInfo.designer && (
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-[10px] font-medium text-orange-400 uppercase tracking-wide">Designer</span>
+                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.designer}</span>
+                          </div>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           </div>
         </div>
 
@@ -180,9 +225,16 @@ export function TeamMemberRow({
                       onClick={() => activeAllocs[0] && onAllocationClick(activeAllocs[0], member, period.date)}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className={`text-[11px] ${getSummaryTextColor(status)}`}>
-                          {status === 'vacation' ? 'V' : displayValue}
-                        </span>
+                        {status === 'overload' ? (
+                          <div className="flex flex-col items-center justify-center gap-0">
+                            <AlertTriangle className="w-3.5 h-3.5 text-[#ff534c]" />
+                            <span className="text-[10px] text-[#ff534c] font-semibold leading-tight">{displayValue}</span>
+                          </div>
+                        ) : (
+                          <span className={`text-[11px] ${getSummaryTextColor(status)}`}>
+                            {status === 'vacation' ? 'V' : displayValue}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </TooltipTrigger>

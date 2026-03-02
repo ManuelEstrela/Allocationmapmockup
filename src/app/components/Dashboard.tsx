@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { TopNavigation } from './TopNavigation';
-import { Toolbar } from './Toolbar';
 import { Header } from './Header';
 import { TimelineGrid } from './TimelineGrid';
 import { AIAssistantPanel } from './AIAssistantPanel';
@@ -89,26 +88,6 @@ export function Dashboard() {
     <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       <TopNavigation />
 
-      <Toolbar
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onFiltersClick={() => setFiltersOpen((v) => !v)}
-        filtersOpen={filtersOpen}
-        onAIAssistant={() => setIsAIPanelOpen(true)}
-        onNewAllocation={() => setIsNewAllocationOpen(true)}
-      />
-
-      {filtersOpen && (
-        <FiltersPanel
-          filters={filters}
-          onFilterChange={setFilters}
-          onReset={handleResetFilters}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          onClose={() => setFiltersOpen(false)}
-        />
-      )}
-
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -117,6 +96,8 @@ export function Dashboard() {
         onNewAllocation={() => setIsNewAllocationOpen(true)}
         onAIAssistant={() => setIsAIPanelOpen(true)}
         currentPeriod={currentPeriod}
+        onFiltersClick={() => setFiltersOpen((v) => !v)}
+        filtersOpen={filtersOpen}
       />
 
       <TimelineGrid
@@ -141,6 +122,17 @@ export function Dashboard() {
         <div
           className="fixed inset-0 bg-black/20 z-40"
           onClick={() => setIsAIPanelOpen(false)}
+        />
+      )}
+
+      {filtersOpen && (
+        <FiltersPanel
+          filters={filters}
+          onFilterChange={setFilters}
+          onReset={handleResetFilters}
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          onClose={() => setFiltersOpen(false)}
         />
       )}
     </div>

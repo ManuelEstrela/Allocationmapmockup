@@ -1,4 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Filter, Sparkles } from 'lucide-react';
+import { Button } from './ui/button';
 import { ViewMode } from '../types/allocation';
 
 interface HeaderProps {
@@ -9,32 +11,88 @@ interface HeaderProps {
   onNewAllocation: () => void;
   onAIAssistant: () => void;
   currentPeriod: string;
+  onFiltersClick: () => void;
+  filtersOpen: boolean;
 }
 
 export function Header({
+  viewMode,
+  onViewModeChange,
   onDateChange,
+  onNewAllocation,
+  onAIAssistant,
   currentPeriod,
+  onFiltersClick,
+  filtersOpen,
 }: HeaderProps) {
   return (
-    <div className="bg-white px-6 py-2 border-b border-gray-200 flex items-center justify-center gap-2">
-      <button
-        onClick={() => onDateChange('prev')}
-        className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
-      >
-        <ChevronLeft className="w-4 h-4 text-gray-600" />
-      </button>
-      <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-md border border-gray-200 min-w-[120px] justify-center">
-        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        <span className="font-medium text-gray-900 text-sm">{currentPeriod}</span>
+    <div className="bg-white px-6 py-2.5 border-b border-gray-200 flex items-center justify-between gap-4">
+      {/* Left: View mode toggles */}
+      <div className="flex items-center gap-1">
+        {(['monthly', 'quarterly', 'annual'] as ViewMode[]).map((mode) => (
+          <button
+            key={mode}
+            onClick={() => onViewModeChange(mode)}
+            className={`px-4 py-1.5 rounded-full font-medium transition-colors text-sm capitalize ${
+              viewMode === mode
+                ? 'bg-[#ff534c] text-white'
+                : 'text-gray-500 hover:bg-gray-100'
+            }`}
+          >
+            {mode.charAt(0).toUpperCase() + mode.slice(1)}
+          </button>
+        ))}
       </div>
-      <button
-        onClick={() => onDateChange('next')}
-        className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
-      >
-        <ChevronRight className="w-4 h-4 text-gray-600" />
-      </button>
+
+      {/* Center: Date navigator */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => onDateChange('prev')}
+          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4 text-gray-600" />
+        </button>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-md border border-gray-200 min-w-[120px] justify-center">
+          <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span className="font-medium text-gray-900 text-sm">{currentPeriod}</span>
+        </div>
+        <button
+          onClick={() => onDateChange('next')}
+          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
+        >
+          <ChevronRight className="w-4 h-4 text-gray-600" />
+        </button>
+      </div>
+
+      {/* Right: Action buttons */}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onFiltersClick}
+          className={`border-[#ff534c] text-[#ff534c] hover:bg-orange-50 h-8 ${filtersOpen ? 'bg-orange-50' : ''}`}
+        >
+          <Filter className="w-4 h-4 mr-1.5" />
+          Filters
+        </Button>
+        <Button
+          onClick={onAIAssistant}
+          size="sm"
+          className="bg-[#a3c9ea] hover:bg-[#8db8df] text-gray-900 text-sm h-8"
+        >
+          <Sparkles className="w-4 h-4 mr-1.5" />
+          AI Assistant
+        </Button>
+        <Button
+          onClick={onNewAllocation}
+          size="sm"
+          className="bg-[#ff534c] hover:bg-[#e64840] text-white text-sm h-8"
+        >
+          + New Allocation
+        </Button>
+      </div>
     </div>
   );
 }

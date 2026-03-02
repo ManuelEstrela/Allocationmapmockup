@@ -61,7 +61,6 @@ export function TimelineGrid({
     if (viewMode === 'monthly') setSelectedAllocation({ allocation, member, day });
   };
 
-  // Generate periods based on view mode
   let periods: Array<{
     label: string;
     subLabel?: string;
@@ -168,7 +167,6 @@ export function TimelineGrid({
               {[
                 { color: 'bg-[#aaf7e2]', label: 'Full 100%' },
                 { color: 'bg-[#fcc29c]', label: 'Partial' },
-                { color: 'bg-[#ff534c]', label: 'Overload' },
                 { color: 'bg-[#a3c9ea]', label: 'Reserved for a project' },
                 { color: 'bg-[#ffe1e6]', label: 'Vacation' },
                 { color: 'bg-gray-200', label: 'Weekend or Holiday' },

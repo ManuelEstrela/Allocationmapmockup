@@ -14,6 +14,12 @@ export interface Allocation {
   isPending?: boolean;
 }
 
+export interface TeamInfo {
+  em?: string;
+  techLead?: string;
+  designer?: string;
+}
+
 export interface TeamMember {
   id: string;
   name: string;
@@ -24,6 +30,8 @@ export interface TeamMember {
   allocations: Allocation[];
   hasWarning?: boolean;
   isIdle?: boolean;
+  teamInfo?: TeamInfo;
+  externalAllocations?: number;
 }
 
 export interface AICandidate {
