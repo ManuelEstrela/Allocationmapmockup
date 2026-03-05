@@ -36,7 +36,7 @@ export function FiltersPanel({
     <>
       <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
 
-      <div className="fixed inset-y-0 right-0 w-[320px] bg-white shadow-2xl z-50 flex flex-col">
+      <div className="fixed inset-y-0 right-0 w-[380px] bg-white shadow-2xl z-50 flex flex-col">
 
         {/* Header */}
         <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
@@ -46,139 +46,170 @@ export function FiltersPanel({
           </button>
         </div>
 
-        {/* Filters + footer — stretch to fill remaining height */}
-        <div className="flex-1 flex flex-col px-5 py-4 min-h-0">
+        {/* Filters + footer */}
+        <div className="flex-1 flex flex-col px-5 py-4 min-h-0 overflow-y-auto">
 
-          {/* Filter fields spaced evenly to fill height */}
-          <div className="flex-1 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col gap-3">
 
-            {/* Resource Name */}
+            {/* Resource Name — full width */}
             <div className="space-y-1">
               <Label className="text-xs font-medium text-gray-600">Resource Name</Label>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
-                <Input placeholder="Search by name..." value={searchValue} onChange={(e) => onSearchChange(e.target.value)} className="pl-8 h-8 text-sm" />
+                <Input
+                  placeholder="Search by name..."
+                  value={searchValue}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="pl-8 h-8 text-sm"
+                />
               </div>
             </div>
 
-            {/* Customer */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Customer</Label>
-              <Select value={filters.company} onValueChange={(v) => updateFilter('company', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select customer..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="360asset">360 ASSET (Americas)</SelectItem>
-                  <SelectItem value="abbvie">ABBVIE (Americas)</SelectItem>
-                  <SelectItem value="accenture">ACCENTURE (EMEA)</SelectItem>
-                  <SelectItem value="adobe">ADOBE (Americas)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {/* Two-column grid for all other filters */}
+            <div className="grid grid-cols-2 gap-x-3 gap-y-3">
 
-            {/* Project */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Project</Label>
-              <Select value={filters.project} onValueChange={(v) => updateFilter('project', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select project..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="proj1">ADN.22312 - Insight App</SelectItem>
-                  <SelectItem value="proj2">AME.22208.40 - AMERICARES</SelectItem>
-                  <SelectItem value="proj4">Atlas Platform</SelectItem>
-                  <SelectItem value="proj5">VV New Mobile App</SelectItem>
-                  <SelectItem value="proj6">E-Commerce Platform</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Customer */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Customer</Label>
+                <Select value={filters.company} onValueChange={(v) => updateFilter('company', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="360asset">360 ASSET</SelectItem>
+                    <SelectItem value="abbvie">ABBVIE</SelectItem>
+                    <SelectItem value="accenture">ACCENTURE</SelectItem>
+                    <SelectItem value="adobe">ADOBE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Job */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Job</Label>
-              <Select value={filters.job} onValueChange={(v) => updateFilter('job', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select job..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ba">Business Analyst</SelectItem>
-                  <SelectItem value="dm">Delivery Manager</SelectItem>
-                  <SelectItem value="dev">Developer</SelectItem>
-                  <SelectItem value="devops">DevOps Engineer</SelectItem>
-                  <SelectItem value="designer">Designer</SelectItem>
-                  <SelectItem value="qa">QA Engineer</SelectItem>
-                  <SelectItem value="pm">Product Manager</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Project */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Project</Label>
+                <Select value={filters.project} onValueChange={(v) => updateFilter('project', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="proj1">Insight App</SelectItem>
+                    <SelectItem value="proj2">AMERICARES</SelectItem>
+                    <SelectItem value="proj4">Atlas Platform</SelectItem>
+                    <SelectItem value="proj5">VV New Mobile App</SelectItem>
+                    <SelectItem value="proj6">E-Commerce</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Job Grade */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Job Grade</Label>
-              <Select value={filters.jobGrade} onValueChange={(v) => updateFilter('jobGrade', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select grade..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="experienced">Experienced</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="rolemodel">Role Model</SelectItem>
-                  <SelectItem value="rookie">Rookie</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Job */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Job</Label>
+                <Select value={filters.job} onValueChange={(v) => updateFilter('job', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ba">Business Analyst</SelectItem>
+                    <SelectItem value="dm">Delivery Manager</SelectItem>
+                    <SelectItem value="dev">Developer</SelectItem>
+                    <SelectItem value="devops">DevOps Engineer</SelectItem>
+                    <SelectItem value="designer">Designer</SelectItem>
+                    <SelectItem value="qa">QA Engineer</SelectItem>
+                    <SelectItem value="pm">Product Manager</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Resource Company */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Resource Company</Label>
-              <Select value={filters.timezone} onValueChange={(v) => updateFilter('timezone', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select company..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="acme">Acme Corp</SelectItem>
-                  <SelectItem value="techstart">TechStart Inc</SelectItem>
-                  <SelectItem value="globaltech">GlobalTech</SelectItem>
-                  <SelectItem value="nexus">Nexus Solutions</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Job Grade */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Job Grade</Label>
+                <Select value={filters.jobGrade} onValueChange={(v) => updateFilter('jobGrade', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="experienced">Experienced</SelectItem>
+                    <SelectItem value="intermediate">Intermediate</SelectItem>
+                    <SelectItem value="rolemodel">Role Model</SelectItem>
+                    <SelectItem value="rookie">Rookie</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Resource Timezones */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Resource Timezones</Label>
-              <Select>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select timezone..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="gmt">GMT</SelectItem>
-                  <SelectItem value="utc">UTC</SelectItem>
-                  <SelectItem value="utcplus1">UTC+1</SelectItem>
-                  <SelectItem value="utcplus2">UTC+2</SelectItem>
-                  <SelectItem value="utcminus5">UTC-5</SelectItem>
-                  <SelectItem value="utcminus8">UTC-8</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Resource Company */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Resource Company</Label>
+                <Select value={filters.timezone} onValueChange={(v) => updateFilter('timezone', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="acme">Acme Corp</SelectItem>
+                    <SelectItem value="techstart">TechStart Inc</SelectItem>
+                    <SelectItem value="globaltech">GlobalTech</SelectItem>
+                    <SelectItem value="nexus">Nexus Solutions</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Resource Office */}
-            <div className="space-y-1">
-              <Label className="text-xs font-medium text-gray-600">Resource Office</Label>
-              <Select value={filters.office} onValueChange={(v) => updateFilter('office', v)}>
-                <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select office..." /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="au-melb">AU - Melbourne</SelectItem>
-                  <SelectItem value="ch-st">CH - St. Gallen</SelectItem>
-                  <SelectItem value="de-mun">DE - Munich</SelectItem>
-                  <SelectItem value="fr-par">FR - Paris</SelectItem>
-                  <SelectItem value="us-nyc">US - New York</SelectItem>
-                  <SelectItem value="us-sf">US - San Francisco</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Resource Timezones */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Timezone</Label>
+                <Select>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gmt">GMT</SelectItem>
+                    <SelectItem value="utc">UTC</SelectItem>
+                    <SelectItem value="utcplus1">UTC+1</SelectItem>
+                    <SelectItem value="utcplus2">UTC+2</SelectItem>
+                    <SelectItem value="utcminus5">UTC-5</SelectItem>
+                    <SelectItem value="utcminus8">UTC-8</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {/* Date range */}
-            <div className="grid grid-cols-2 gap-3">
+              {/* Resource Office */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Resource Office</Label>
+                <Select value={filters.office} onValueChange={(v) => updateFilter('office', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="au-melb">AU - Melbourne</SelectItem>
+                    <SelectItem value="ch-st">CH - St. Gallen</SelectItem>
+                    <SelectItem value="de-mun">DE - Munich</SelectItem>
+                    <SelectItem value="fr-par">FR - Paris</SelectItem>
+                    <SelectItem value="us-nyc">US - New York</SelectItem>
+                    <SelectItem value="us-sf">US - San Francisco</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Delivery Unit */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Delivery Unit</Label>
+                <Select value={filters.deliveryUnit} onValueChange={(v) => updateFilter('deliveryUnit', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alpha">Alpha Team</SelectItem>
+                    <SelectItem value="beta">Beta Team</SelectItem>
+                    <SelectItem value="gamma">Gamma Team</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Date From */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">From</Label>
-                <Input type="date" className="h-8 text-sm" value={filters.dateFrom} onChange={(e) => updateFilter('dateFrom', e.target.value)} />
+                <Input
+                  type="date"
+                  className="h-8 text-sm"
+                  value={filters.dateFrom}
+                  onChange={(e) => updateFilter('dateFrom', e.target.value)}
+                />
               </div>
+
+              {/* Date To */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">To</Label>
-                <Input type="date" className="h-8 text-sm" value={filters.dateTo} onChange={(e) => updateFilter('dateTo', e.target.value)} />
+                <Input
+                  type="date"
+                  className="h-8 text-sm"
+                  value={filters.dateTo}
+                  onChange={(e) => updateFilter('dateTo', e.target.value)}
+                />
               </div>
-            </div>
 
+            </div>
           </div>
 
           {/* Footer */}
