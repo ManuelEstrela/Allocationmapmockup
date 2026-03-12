@@ -12,6 +12,9 @@ export interface Allocation {
   hoursPerDay: number;
   status: AllocationStatus;
   isPending?: boolean;
+  // Change 1: team members per project
+  teamMembers?: { name: string; role: string }[];
+  daysInfo?: string; // e.g. "5/9"
 }
 
 export interface TeamInfo {
@@ -29,6 +32,8 @@ export interface TeamMember {
   projectCount: number;
   allocations: Allocation[];
   hasWarning?: boolean;
+  // Change 3: specific overload days for tooltip
+  warningDays?: number[];
   isIdle?: boolean;
   teamInfo?: TeamInfo;
   externalAllocations?: number;

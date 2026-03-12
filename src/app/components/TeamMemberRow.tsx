@@ -104,12 +104,35 @@ export function TeamMemberRow({
     return status === 'overload' ? 'text-[#ff534c] font-semibold' : 'text-gray-700';
   };
 
+  // Change 1: group allocations by project, keeping the first allocation's metadata per project
   const projectGroups = member.allocations.reduce((acc, allocation) => {
     const key = allocation.projectName;
     if (!acc[key]) acc[key] = [];
     acc[key].push(allocation);
     return acc;
   }, {} as Record<string, typeof member.allocations>);
+
+  // Compute per-project daysInfo and sum for person-level total
+  const projectDaysInfo: Record<string, string> = {};
+  let totalInternal = 0;
+  let totalExternal = 0;
+  Object.entries(projectGroups).forEach(([projectName, allocs]) => {
+    const info = allocs[0]?.daysInfo;
+    if (info) {
+      projectDaysInfo[projectName] = info;
+      const [a, b] = info.split('/').map(Number);
+      if (!isNaN(a)) totalInternal += a;
+      if (!isNaN(b)) totalExternal += b;
+    }
+  });
+  const personDaysTotal = (totalInternal > 0 || totalExternal > 0)
+    ? `${totalInternal}/${totalExternal}`
+    : undefined;
+
+  const buildWarningDays = () => {
+    if (!member.warningDays || member.warningDays.length === 0) return null;
+    return member.warningDays.join(', ');
+  };
 
   return (
     <>
@@ -131,13 +154,11 @@ export function TeamMemberRow({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <p className="font-medium text-gray-900 truncate text-xs">{member.name}</p>
-              {member.externalAllocations !== undefined && (
+              {personDaysTotal && (
                 <span className={`text-[10px] font-semibold flex-shrink-0 ${
-                  member.allocations.length === member.externalAllocations
-                    ? 'text-gray-400'
-                    : 'text-[#ff534c]'
+                  totalInternal === totalExternal ? 'text-gray-400' : 'text-[#ff534c]'
                 }`}>
-                  {member.allocations.length}/{member.externalAllocations}
+                  {personDaysTotal}
                 </span>
               )}
             </div>
@@ -145,36 +166,28 @@ export function TeamMemberRow({
               <p className="text-[11px] text-gray-500 truncate">
                 {member.role}{member.grade ? ` - ${member.grade}` : ''}
               </p>
-              {member.teamInfo && (
+              {/* Warning icon — same popup style as team info */}
+              {member.hasWarning && (
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button className="flex-shrink-0 p-0 leading-none">
-                        <Info className="w-3 h-3 text-gray-300 hover:text-[#ff534c] transition-colors" />
+                        <AlertTriangle className="w-3 h-3 text-[#ff534c] hover:text-[#e64840] transition-colors" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent side="right" sideOffset={6} className="bg-white border border-[#ff534c] shadow-lg rounded-xl p-0 overflow-hidden w-48">
+                    <TooltipContent side="right" sideOffset={6} className="bg-white border border-[#ff534c] shadow-lg rounded-xl p-0 overflow-hidden w-56">
                       <div className="bg-orange-50 px-3 py-2 border-b border-orange-100">
-                        <p className="text-[10px] font-semibold text-[#ff534c] uppercase tracking-wide">Team Info</p>
+                        <p className="text-[10px] font-semibold text-[#ff534c] uppercase tracking-wide">Overload Warning</p>
                       </div>
-                      <div className="px-3 py-2.5 space-y-1.5">
-                        {member.teamInfo.em && (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">EM</span>
-                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.em}</span>
-                          </div>
-                        )}
-                        {member.teamInfo.techLead && (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">Tech Lead</span>
-                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.techLead}</span>
-                          </div>
-                        )}
-                        {member.teamInfo.designer && (
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">Designer</span>
-                            <span className="text-[11px] text-gray-700 font-medium">{member.teamInfo.designer}</span>
-                          </div>
+                      <div className="px-3 py-2.5">
+                        {buildWarningDays() ? (
+                          <p className="text-[11px] text-gray-700 leading-relaxed">
+                            This user is experiencing overload on the <span className="font-semibold text-[#ff534c]">{buildWarningDays()}</span> of the month.
+                          </p>
+                        ) : (
+                          <p className="text-[11px] text-gray-700 leading-relaxed">
+                            This resource has scheduling conflicts.
+                          </p>
                         )}
                       </div>
                     </TooltipContent>
@@ -262,60 +275,100 @@ export function TeamMemberRow({
         </div>
       </div>
 
-      {/* Expanded Project Rows */}
+      {/* Change 1: Expanded Project Rows — now with team avatars and days info */}
       {isExpanded &&
-        Object.entries(projectGroups).map(([projectName, allocations], idx) => (
-          <div key={idx} className="flex border-b border-gray-100 bg-gray-50" style={{ minHeight: '44px' }}>
-            <div className="w-56 flex-shrink-0 px-4 border-r border-gray-200 flex items-center pl-12">
-              <div>
-                <p className="text-xs text-gray-700 font-medium truncate">{projectName}</p>
-                <p className="text-[11px] text-gray-500 truncate">
-                  {allocations[0].client || 'A-TO-BE'}
-                </p>
+        Object.entries(projectGroups).map(([projectName, allocations], idx) => {
+          // Use the first allocation for metadata (team, daysInfo, client)
+          const firstAlloc = allocations[0];
+          return (
+            <div key={idx} className="flex border-b border-gray-100 bg-gray-50" style={{ minHeight: '52px' }}>
+              <div className="w-56 flex-shrink-0 px-4 border-r border-gray-200 flex items-center pl-12">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs text-gray-700 font-medium truncate">{projectName}</p>
+                    {projectDaysInfo[projectName] && (
+                      <span className={`text-[10px] font-semibold flex-shrink-0 ${
+                        projectDaysInfo[projectName].split('/')[0] === projectDaysInfo[projectName].split('/')[1]
+                          ? 'text-gray-400'
+                          : 'text-[#ff534c]'
+                      }`}>
+                        {projectDaysInfo[projectName]}
+                      </span>
+                    )}
+                    {/* Info icon per project — shows team members on hover */}
+                    {firstAlloc.teamMembers && firstAlloc.teamMembers.length > 0 && (
+                      <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button className="flex-shrink-0 p-0 leading-none">
+                              <Info className="w-3 h-3 text-gray-300 hover:text-[#ff534c] transition-colors" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" sideOffset={6} className="bg-white border border-[#ff534c] shadow-lg rounded-xl p-0 overflow-hidden w-48">
+                            <div className="bg-orange-50 px-3 py-2 border-b border-orange-100">
+                              <p className="text-[10px] font-semibold text-[#ff534c] uppercase tracking-wide">Team</p>
+                            </div>
+                            <div className="px-3 py-2.5 space-y-1.5">
+                              {firstAlloc.teamMembers.map((tm, ti) => (
+                                <div key={ti} className="flex items-center justify-between gap-2">
+                                  <span className="text-[10px] font-medium text-[#ff534c] uppercase tracking-wide">{tm.role}</span>
+                                  <span className="text-[11px] text-gray-700 font-medium">{tm.name}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                    {firstAlloc.client || 'A-TO-BE'}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-1 items-stretch">
+                {periods.map((period, index) => {
+                  const allocation = allocations.find((a) => {
+                    if (viewMode === 'monthly') {
+                      const t = period.date.getTime();
+                      return t >= a.startDate.getTime() && t <= a.endDate.getTime();
+                    } else if (viewMode === 'quarterly') {
+                      const weekStart = startOfWeek(period.date, { weekStartsOn: 0 });
+                      const weekEnd = endOfWeek(period.date, { weekStartsOn: 0 });
+                      return (
+                        isWithinInterval(a.startDate, { start: weekStart, end: weekEnd }) ||
+                        isWithinInterval(a.endDate, { start: weekStart, end: weekEnd }) ||
+                        (a.startDate <= weekStart && a.endDate >= weekEnd)
+                      );
+                    } else {
+                      const monthStart = startOfMonth(period.date);
+                      const monthEnd = endOfMonth(period.date);
+                      return (
+                        isWithinInterval(a.startDate, { start: monthStart, end: monthEnd }) ||
+                        isWithinInterval(a.endDate, { start: monthStart, end: monthEnd }) ||
+                        (a.startDate <= monthStart && a.endDate >= monthEnd)
+                      );
+                    }
+                  });
+                  return (
+                    <AllocationCell
+                      key={index}
+                      allocation={allocation}
+                      isWeekend={period.isWeekend || false}
+                      isHoliday={period.isHoliday || false}
+                      day={period.date}
+                      isProjectRow
+                      viewMode={viewMode}
+                      percentage={allocation ? allocation.hoursPerDay / 8 : 0}
+                      colClass={colClass}
+                      onClick={() => allocation && onAllocationClick(allocation, member, period.date)}
+                    />
+                  );
+                })}
               </div>
             </div>
-            <div className="flex flex-1 items-stretch">
-              {periods.map((period, index) => {
-                const allocation = allocations.find((a) => {
-                  if (viewMode === 'monthly') {
-                    const t = period.date.getTime();
-                    return t >= a.startDate.getTime() && t <= a.endDate.getTime();
-                  } else if (viewMode === 'quarterly') {
-                    const weekStart = startOfWeek(period.date, { weekStartsOn: 0 });
-                    const weekEnd = endOfWeek(period.date, { weekStartsOn: 0 });
-                    return (
-                      isWithinInterval(a.startDate, { start: weekStart, end: weekEnd }) ||
-                      isWithinInterval(a.endDate, { start: weekStart, end: weekEnd }) ||
-                      (a.startDate <= weekStart && a.endDate >= weekEnd)
-                    );
-                  } else {
-                    const monthStart = startOfMonth(period.date);
-                    const monthEnd = endOfMonth(period.date);
-                    return (
-                      isWithinInterval(a.startDate, { start: monthStart, end: monthEnd }) ||
-                      isWithinInterval(a.endDate, { start: monthStart, end: monthEnd }) ||
-                      (a.startDate <= monthStart && a.endDate >= monthEnd)
-                    );
-                  }
-                });
-                return (
-                  <AllocationCell
-                    key={index}
-                    allocation={allocation}
-                    isWeekend={period.isWeekend || false}
-                    isHoliday={period.isHoliday || false}
-                    day={period.date}
-                    isProjectRow
-                    viewMode={viewMode}
-                    percentage={allocation ? allocation.hoursPerDay / 8 : 0}
-                    colClass={colClass}
-                    onClick={() => allocation && onAllocationClick(allocation, member, period.date)}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        ))}
+          );
+        })}
     </>
   );
 }

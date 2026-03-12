@@ -36,10 +36,11 @@ export function FiltersPanel({
     <>
       <div className="fixed inset-0 bg-black/20 z-40" onClick={onClose} />
 
-      <div className="fixed inset-y-0 right-0 w-[380px] bg-white shadow-2xl z-50 flex flex-col">
+      {/* Change 4: increased width from w-[380px] to w-[440px] */}
+      <div className="fixed inset-y-0 right-0 w-[440px] bg-white shadow-2xl z-50 flex flex-col">
 
         {/* Header */}
-        <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
           <h2 className="text-base font-semibold text-gray-900">Filters</h2>
           <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
             <X className="w-4 h-4 text-gray-400" />
@@ -47,11 +48,24 @@ export function FiltersPanel({
         </div>
 
         {/* Filters + footer */}
-        <div className="flex-1 flex flex-col px-5 py-4 min-h-0 overflow-y-auto">
+        <div className="flex-1 flex flex-col px-6 py-4 min-h-0 overflow-y-auto">
 
           <div className="flex-1 flex flex-col gap-3">
 
-            {/* Resource Name — full width */}
+            {/* Change 4: Field order:
+                1. Resource Name
+                2. Job
+                3. Job Grade
+                4. Timezone
+                5. Office
+                6. Resource Company
+                7. Delivery Unit
+                8. Customer
+                9. Project
+                10. Start Date / End Date
+            */}
+
+            {/* 1. Resource Name — full width */}
             <div className="space-y-1">
               <Label className="text-xs font-medium text-gray-600">Resource Name</Label>
               <div className="relative">
@@ -66,38 +80,9 @@ export function FiltersPanel({
             </div>
 
             {/* Two-column grid for all other filters */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-3">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
 
-              {/* Customer */}
-              <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">Customer</Label>
-                <Select value={filters.company} onValueChange={(v) => updateFilter('company', v)}>
-                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="360asset">360 ASSET</SelectItem>
-                    <SelectItem value="abbvie">ABBVIE</SelectItem>
-                    <SelectItem value="accenture">ACCENTURE</SelectItem>
-                    <SelectItem value="adobe">ADOBE</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Project */}
-              <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">Project</Label>
-                <Select value={filters.project} onValueChange={(v) => updateFilter('project', v)}>
-                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="proj1">Insight App</SelectItem>
-                    <SelectItem value="proj2">AMERICARES</SelectItem>
-                    <SelectItem value="proj4">Atlas Platform</SelectItem>
-                    <SelectItem value="proj5">VV New Mobile App</SelectItem>
-                    <SelectItem value="proj6">E-Commerce</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Job */}
+              {/* 2. Job */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">Job</Label>
                 <Select value={filters.job} onValueChange={(v) => updateFilter('job', v)}>
@@ -114,7 +99,7 @@ export function FiltersPanel({
                 </Select>
               </div>
 
-              {/* Job Grade */}
+              {/* 3. Job Grade */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">Job Grade</Label>
                 <Select value={filters.jobGrade} onValueChange={(v) => updateFilter('jobGrade', v)}>
@@ -128,24 +113,10 @@ export function FiltersPanel({
                 </Select>
               </div>
 
-              {/* Resource Company */}
-              <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">Resource Company</Label>
-                <Select value={filters.timezone} onValueChange={(v) => updateFilter('timezone', v)}>
-                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="acme">Acme Corp</SelectItem>
-                    <SelectItem value="techstart">TechStart Inc</SelectItem>
-                    <SelectItem value="globaltech">GlobalTech</SelectItem>
-                    <SelectItem value="nexus">Nexus Solutions</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Resource Timezones */}
+              {/* 4. Timezone */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">Timezone</Label>
-                <Select>
+                <Select value={filters.timezone} onValueChange={(v) => updateFilter('timezone', v)}>
                   <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gmt">GMT</SelectItem>
@@ -158,9 +129,9 @@ export function FiltersPanel({
                 </Select>
               </div>
 
-              {/* Resource Office */}
+              {/* 5. Office */}
               <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">Resource Office</Label>
+                <Label className="text-xs font-medium text-gray-600">Office</Label>
                 <Select value={filters.office} onValueChange={(v) => updateFilter('office', v)}>
                   <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
                   <SelectContent>
@@ -174,7 +145,21 @@ export function FiltersPanel({
                 </Select>
               </div>
 
-              {/* Delivery Unit */}
+              {/* 6. Resource Company */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Resource Company</Label>
+                <Select value={filters.company} onValueChange={(v) => updateFilter('company', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="acme">Acme Corp</SelectItem>
+                    <SelectItem value="techstart">TechStart Inc</SelectItem>
+                    <SelectItem value="globaltech">GlobalTech</SelectItem>
+                    <SelectItem value="nexus">Nexus Solutions</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 7. Delivery Unit */}
               <div className="space-y-1">
                 <Label className="text-xs font-medium text-gray-600">Delivery Unit</Label>
                 <Select value={filters.deliveryUnit} onValueChange={(v) => updateFilter('deliveryUnit', v)}>
@@ -187,9 +172,38 @@ export function FiltersPanel({
                 </Select>
               </div>
 
-              {/* Date From */}
+              {/* 8. Customer */}
               <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">From</Label>
+                <Label className="text-xs font-medium text-gray-600">Customer</Label>
+                <Select value={filters.company} onValueChange={(v) => updateFilter('company', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="360asset">360 ASSET</SelectItem>
+                    <SelectItem value="abbvie">ABBVIE</SelectItem>
+                    <SelectItem value="accenture">ACCENTURE</SelectItem>
+                    <SelectItem value="adobe">ADOBE</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 9. Project */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Project</Label>
+                <Select value={filters.project} onValueChange={(v) => updateFilter('project', v)}>
+                  <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="proj1">Insight App</SelectItem>
+                    <SelectItem value="proj2">AMERICARES</SelectItem>
+                    <SelectItem value="proj4">Atlas Platform</SelectItem>
+                    <SelectItem value="proj5">VV New Mobile App</SelectItem>
+                    <SelectItem value="proj6">E-Commerce</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 10. Start Date */}
+              <div className="space-y-1">
+                <Label className="text-xs font-medium text-gray-600">Start Date</Label>
                 <Input
                   type="date"
                   className="h-8 text-sm"
@@ -198,9 +212,9 @@ export function FiltersPanel({
                 />
               </div>
 
-              {/* Date To */}
+              {/* 10. End Date */}
               <div className="space-y-1">
-                <Label className="text-xs font-medium text-gray-600">To</Label>
+                <Label className="text-xs font-medium text-gray-600">End Date</Label>
                 <Input
                   type="date"
                   className="h-8 text-sm"
